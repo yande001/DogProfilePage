@@ -21,6 +21,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 
 
 @Composable
@@ -34,12 +36,12 @@ fun ProfilePage(){
 
     ) {
 
-        Column(
-            Modifier.verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            Image(painter= painterResource(id = R.drawable.dog1),
+        ConstraintLayout(){
+            val (image, breedText, nameText, rowStats,
+                buttonFollow, buttonMessage) = createRefs()
+            val guideLine = createGuidelineFromTop(0.1f)
+
+            Image(painter= painterResource(id = R.drawable.shih),
                 contentDescription = "Dog",
                 modifier = Modifier
                     .size(100.dp)
@@ -48,36 +50,66 @@ fun ProfilePage(){
                         width = 2.dp,
                         color = Color.Red,
                         shape = CircleShape
-                    ),
+                    ).constrainAs(image){
+                        top.linkTo(guideLine)
+                        start.linkTo(parent.start)
+                        end.linkTo(parent.end)
+                    }
+                ,
                 contentScale = ContentScale.Crop
             )
-            Text(text = "Lovely Dog")
-            Text(text = "Taiwan")
+            Text(text = "Shih Tzu",
+                modifier = Modifier.constrainAs(breedText){
+                    top.linkTo(image.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                )
+            Text(
+                text = "Little House",
+                modifier = Modifier.constrainAs(nameText){
+                    top.linkTo(breedText.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+            )
             Row(
                 horizontalArrangement = Arrangement.SpaceEvenly,
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
+                    .constrainAs(rowStats){
+                        top.linkTo(breedText.bottom, margin = 8.dp)
+                    }
             ) {
                 ProfileStats(count = "150", title = "Followers")
                 ProfileStats(count = "100", title = "Followings")
                 ProfileStats(count = "20", title = "Posts")
 
             }
-            Row(
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            ){
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Follow user")
-                }
-                Button(onClick = { /*TODO*/ }) {
-                    Text(text = "Direct Message")
-                }
-            }
 
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.constrainAs(buttonFollow){
+                    top.linkTo(rowStats.bottom, margin = 16.dp)
+                    start.linkTo(parent.start)
+                    end.linkTo(buttonMessage.start)
+                    width = Dimension.wrapContent
+                }
+            ) {
+                Text(text = "Follow user")
+            }
+            Button(
+                onClick = { /*TODO*/ },
+                modifier = Modifier.constrainAs(buttonMessage){
+                    top.linkTo(rowStats.bottom,  margin = 16.dp)
+                    start.linkTo(buttonFollow.end)
+                    end.linkTo(parent.end)
+                    width = Dimension.wrapContent
+                }
+            ) {
+                Text(text = "Direct Message")
+            }
 
         }
     }
